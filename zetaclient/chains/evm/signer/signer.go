@@ -675,6 +675,44 @@ func (signer *Signer) SignMigrateTssFundsCmd(txData *OutboundData) (*ethtypes.Tr
 	return tx, nil
 }
 
+// NewTransactionLondon creates a new transaction using London fork rules
+func NewTransactionLondon(
+	chainID *big.Int,
+	nonce uint64,
+	gasPrice *big.Int,
+	gasTipCap *big.Int,
+	gasFeeCap *big.Int,
+	gasLimit uint64,
+	to ethcommon.Address,
+	value *big.Int,
+	data []byte,
+) *ethtypes.Transaction {
+	// create EIP-1559 transaction if chainID is present
+	if chainID != nil {
+		return ethtypes.NewTx(&ethtypes.DynamicFeeTx{
+			ChainID:   chainID,
+			Nonce:     nonce,
+			To:        &to,
+			Value:     value,
+			GasTipCap: gasTipCap,
+			GasFeeCap: gasFeeCap,
+			Gas:       gasLimit,
+			Data:      data,
+		})
+	} else if gasPrice != nil {
+		// fallback to legacy transaction if gasPrice is present
+		return ethtypes.NewTx(&ethtypes.LegacyTx{
+			Nonce:    nonce,
+			To:       &to,
+			Value:    value,
+			GasPrice: gasPrice,
+			Gas:      gasLimit,
+			Data:     data,
+		})
+	}
+	return nil
+}
+
 // reportToOutboundTracker reports outboundHash to tracker only when tx receipt is available
 func (signer *Signer) reportToOutboundTracker(
 	zetacoreClient interfaces.ZetacoreClient,
