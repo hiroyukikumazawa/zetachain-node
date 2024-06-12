@@ -1,57 +1,37 @@
-# Build Stage
-FROM golang:1.20-alpine3.18 AS builder
+FROM ubuntu:22.04 AS builder
 
+RUN apt update && \
+    apt install -yq wget curl git build-essential && \
+    rm -rf /var/lib/apt/lists
+
+ARG TARGETARCH
+RUN curl -L https://go.dev/dl/go1.20.14.linux-${TARGETARCH}.tar.gz | tar -C /usr/local -xz
+
+ENV PATH=/usr/local/go/bin/:${PATH}
 ENV GOPATH /go
-ENV GOOS=linux
-ENV CGO_ENABLED=1
+ENV GOCACHE=/root/.cache/go-build
 
-# Install build dependencies
-RUN apk --no-cache add git make build-base jq openssh libusb-dev linux-headers bash curl python3 py3-pip
-
-# Set the working directory
 WORKDIR /go/delivery/zeta-node
 
-# Copy module files and download dependencies
 COPY go.mod .
 COPY go.sum .
 
 RUN go mod download
-
-# Copy the rest of the source code and build the application
 COPY . .
+RUN --mount=type=cache,target="/root/.cache/go-build" make install
 
-RUN make install
+FROM ubuntu:22.04
 
-# Run Stage
-FROM alpine:3.18
+COPY contrib/docker-scripts/start.sh /scripts/start.sh
 
-ENV COSMOVISOR_CHECKSUM="626dfc58c266b85f84a7ed8e2fe0e2346c15be98cfb9f9b88576ba899ed78cdc"
-ENV COSMOVISOR_VERSION="v1.5.0"
-# Copy Start Script Helpers
-COPY contrib/docker-scripts/* /scripts/
+RUN chmod +x /scripts/start.sh
 
-# Install runtime dependencies
-RUN apk --no-cache add git jq bash curl nano vim tmux python3 libusb-dev linux-headers make build-base bind-tools psmisc coreutils wget py3-pip qemu-img qemu-system-x86_64 && \
-    pip install requests && \
-    chmod a+x -R /scripts && \
-    wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.31-r0/glibc-2.31-r0.apk && \
-    apk add --force-overwrite --allow-untrusted glibc-2.31-r0.apk && \
-    curl https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz > /tmp/google-cloud-sdk.tar.gz && \
-    mkdir -p /usr/local/gcloud && \
-    tar -C /usr/local/gcloud -xvf /tmp/google-cloud-sdk.tar.gz && \
-    /usr/local/gcloud/google-cloud-sdk/install.sh --quiet && \
-    ln -s /usr/local/gcloud/google-cloud-sdk/bin/gcloud /usr/bin/gcloud && \
-    python /scripts/install_cosmovisor.py
+RUN apt update && \
+    apt install -yq wget curl jq && \
+    rm -rf /var/lib/apt/lists
 
-# Copy the binaries from the build stage
 COPY --from=builder /go/bin/zetaclientd /usr/local/bin/zetaclientd
 COPY --from=builder /go/bin/zetacored /usr/local/bin/zetacored
-
-# Set the working directory
-WORKDIR /usr/local/bin
-
-# Set the default shell
-ENV SHELL /bin/bash
 
 EXPOSE 26656
 EXPOSE 1317

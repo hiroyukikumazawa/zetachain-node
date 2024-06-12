@@ -206,21 +206,6 @@ function setup_basic_keyring {
   fi
 }
 
-function download_binary_version {
-  if [ "${NETWORK}" == "mainnet" ]; then
-    wget -q ${BINARY_LIST_MAINNET}
-    export DOWNLOAD_BINARIES=$(cat binary_list.json | tr -d '\n')
-    rm -rf binary_list.json
-    logt "BINARY_LIST: ${DOWNLOAD_BINARIES}"
-  elif [ "${NETWORK}" == "athens3" ]; then
-    wget -q ${BINARY_LIST_ATHENS3}
-    export DOWNLOAD_BINARIES=$(cat binary_list.json | tr -d '\n')
-    rm -rf binary_list.json
-    logt "BINARY_LIST: ${DOWNLOAD_BINARIES}"
-  fi
-  python3 /scripts/download_binaries.py
-}
-
 function move_zetacored_binaries {
   mkdir -p ${DAEMON_HOME}/cosmovisor || logt "Directory already exists ${DAEMON_HOME}/cosmovisor"
   mkdir -p ${DAEMON_HOME}/cosmovisor/genesis || logt "Directory already exists ${DAEMON_HOME}/cosmovisor/genesis"
@@ -236,8 +221,8 @@ function move_zetacored_binaries {
 }
 
 function start_network {
-  ${VISOR_NAME} version
-  ${VISOR_NAME} run start --home ${DAEMON_HOME} \
+  ${DAEMON_NAME} version
+  ${DAEMON_NAME} start --home ${DAEMON_HOME} \
     --log_level info \
     --moniker ${MONIKER} \
     --rpc.laddr tcp://0.0.0.0:26657 \
@@ -287,17 +272,11 @@ else
   logt "Download Configs"
   download_configs
 
-  logt "Download Historical Binaries"
-  download_binary_version
-
   logt "Setup Restore Type: ${RESTORE_TYPE}"
   setup_restore_type
 
   logt "Modify Chain Configs"
   change_config_values
-
-  logt "Move root binaries to current"
-  move_zetacored_binaries
 
   logt "Start sequence has completed, echo into file so on restart it doesn't download snapshots again."
   echo "START_SEQUENCE_COMPLETE" >> ${DAEMON_HOME}/start_sequence_status
