@@ -1,7 +1,7 @@
 FROM ubuntu:22.04 AS builder
 
 RUN apt update && \
-    apt install -yq wget curl git build-essential && \
+    apt install -yq wget curl git build-essential bash clang tar wget musl-dev git make gcc bc ca-certificates && \
     rm -rf /var/lib/apt/lists
 
 ARG TARGETARCH
@@ -19,6 +19,24 @@ COPY go.sum .
 RUN go mod download
 COPY . .
 RUN --mount=type=cache,target="/root/.cache/go-build" make install
+
+
+# # ============
+# #  Cosmovisor
+# # ============
+
+ARG GIT_REF=cosmovisor/v1.5.0
+ARG REPO_URL=https://github.com/cosmos/cosmos-sdk
+RUN git clone -n "${REPO_URL}" cosmos-sdk \
+    && cd cosmos-sdk \
+    && git fetch origin "${GIT_REF}" \
+    && git reset --hard FETCH_HEAD
+
+WORKDIR /go/cosmos-sdk/cosmovisor/
+
+RUN go mod download
+RUN make cosmovisor
+
 
 FROM ubuntu:22.04
 
