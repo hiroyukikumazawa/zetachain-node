@@ -222,7 +222,7 @@ function move_zetacored_binaries {
 
 function start_network {
   ${DAEMON_NAME} version
-  ${DAEMON_NAME} start --home ${DAEMON_HOME} \
+  ${VISOR_NAME} run start --home ${DAEMON_HOME} \
     --log_level info \
     --moniker ${MONIKER} \
     --rpc.laddr tcp://0.0.0.0:26657 \
