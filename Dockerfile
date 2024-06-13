@@ -28,14 +28,15 @@ RUN --mount=type=cache,target="/root/.cache/go-build" make install
 FROM golang:1.20 AS cosmovisor-builder
 RUN apt update && apt install -y bash clang tar wget musl-dev git make gcc bc ca-certificates
 
-ARG GIT_REF=cosmovisor/v1.3.0
+ARG GIT_REF=cosmovisor/v1.5.0
 ARG REPO_URL=https://github.com/cosmos/cosmos-sdk
 RUN git clone -n "${REPO_URL}" cosmos-sdk \
     && cd cosmos-sdk \
     && git fetch origin "${GIT_REF}" \
     && git reset --hard FETCH_HEAD
 
-WORKDIR /go/cosmos-sdk/cosmovisor/
+# WORKDIR /go/cosmos-sdk/cosmovisor/
+WORKDIR /go/cosmos-sdk/
 
 RUN go mod download
 RUN make cosmovisor
@@ -53,6 +54,7 @@ RUN apt update && \
 
 COPY --from=builder /go/bin/zetaclientd /usr/local/bin/zetaclientd
 COPY --from=builder /go/bin/zetacored /usr/local/bin/zetacored
+COPY --from=cosmovisor-builder /go/cosmos-sdk/tools/cosmovisor /usr/local/bin/cosmovisor
 
 EXPOSE 26656
 EXPOSE 1317

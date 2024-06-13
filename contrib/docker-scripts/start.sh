@@ -9,7 +9,7 @@ function load_defaults {
   #DEFAULT: Mainnet Statesync.
   export DAEMON_HOME=${DAEMON_HOME:=/root/.zetacored}
   export NETWORK=${NETWORK:=mainnet}
-  export RESTORE_TYPE=${RESTORE_TYPE:=statesync}
+  export RESTORE_TYPE=${RESTORE_TYPE:=snapshot}
   export SNAPSHOT_API=${SNAPSHOT_API:=https://snapshots.zetachain.com}
   export TRUST_HEIGHT_DIFFERENCE_STATE_SYNC=${TRUST_HEIGHT_DIFFERENCE_STATE_SYNC:=40000}
   export COSMOVISOR_VERSION=${COSMOVISOR_VERSION:=v1.5.0}
@@ -28,7 +28,7 @@ function load_defaults {
   export RE_DO_START_SEQUENCE=${RE_DO_START_SEQUENCE:=false}
 
   #ATHENS3
-  export BINARY_LIST_ATHENS3=${BINARY_LIST_ATHENS3:=https://raw.githubusercontent.com/zeta-chain/network-config/main/athens3/binary_list.json}
+  # export BINARY_LIST_ATHENS3=${BINARY_LIST_ATHENS3:=https://raw.githubusercontent.com/zeta-chain/network-config/main/athens3/binary_list.json}
   export STATE_SYNC_RPC_NODE_FILE_ATHENS3=${STATE_SYNC_RPC_NODE_FILE_ATHENS3:=https://raw.githubusercontent.com/zeta-chain/network-config/main/athens3/state_sync_node}
   export RPC_STATE_SYNC_RPC_LIST_FILE_ATHENS3=${RPC_STATE_SYNC_RPC_LIST_FILE_ATHENS3:=https://raw.githubusercontent.com/zeta-chain/network-config/main/athens3/rpc_state_sync_nodes}
   export APP_TOML_FILE_ATHENS3=${APP_TOML_FILE_ATHENS3:=https://raw.githubusercontent.com/zeta-chain/network-config/main/athens3/app.toml}
@@ -73,7 +73,7 @@ function download_configs {
     wget -q ${CONFIG_TOML_FILE_ATHENS3} -O ${DAEMON_HOME}/config/config.toml
     wget -q ${CLIENT_TOML_FILE_ATHENS3} -O ${DAEMON_HOME}/config/client.toml
     wget -q ${GENESIS_FILE_ATHENS3} -O ${DAEMON_HOME}/config/genesis.json
-    wget -q ${BINARY_LIST_ATHENS3}
+    # wget -q ${BINARY_LIST_ATHENS3}
     export DOWNLOAD_BINARIES=$(cat binary_list.json | tr -d '\n')
     rm -rf binary_list.json
     logt "BINARY_LIST: ${DOWNLOAD_BINARIES}"
