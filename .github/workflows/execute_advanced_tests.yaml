@@ -39,18 +39,17 @@ jobs:
     timeout-minutes: 120
     steps:
       - name: "Checkout Code"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Start Test
         run: make start-e2e-admin-test
 
-      # use docker logs -f rather than docker attach to make sure we get the initial logs
       - name: Watch Test
         run: |
           container_id=$(docker ps --filter "ancestor=orchestrator:latest" --format "{{.ID}}")
           docker logs -f "${container_id}" &
           exit $(docker wait "${container_id}")
-        
+
       - name: Full Log Dump On Failure
         if: failure()
         run: |
@@ -118,6 +117,15 @@ jobs:
         run: |
           make stop-localnet
 
+      - name: Notify Slack on Failure
+        if: failure() && github.event_name == 'schedule'
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CI_ALERTS }}
+
   e2e-performance-test:
     if: ${{ github.event.inputs.e2e-performance-test == 'true' }}
     runs-on: buildjet-4vcpu-ubuntu-2204
@@ -134,6 +142,12 @@ jobs:
           container_id=$(docker ps --filter "ancestor=orchestrator:latest" --format "{{.ID}}")
           docker logs -f "${container_id}" &
           exit $(docker wait "${container_id}")
+
+      - name: Full Log Dump On Failure
+        if: failure()
+        run: |
+          cd contrib/localnet
+          docker compose logs
 
       - name: Notify Slack on Failure
         if: failure() && github.event_name == 'schedule'
@@ -164,7 +178,8 @@ jobs:
       - name: Full Log Dump On Failure
         if: failure()
         run: |
-          make stop-localnet
+          cd contrib/localnet
+          docker compose logs
 
       - name: Notify Slack on Failure
         if: failure() && github.event_name == 'schedule'
