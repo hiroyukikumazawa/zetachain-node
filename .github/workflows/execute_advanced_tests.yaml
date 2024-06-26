@@ -71,7 +71,7 @@ jobs:
 
   e2e-upgrade-test:
     if: ${{ github.event.inputs.e2e-upgrade-test == 'true' || github.event_name == 'schedule' }}
-    runs-on: buildjet-16vcpu-ubuntu-2204
+    runs-on: buildjet-4vcpu-ubuntu-2204
     timeout-minutes: 120
     steps:
       - name: "Checkout Code"
