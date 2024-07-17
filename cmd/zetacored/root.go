@@ -6,7 +6,7 @@ import (
 	"io"
 	"os"
 
-	appparams "cosmossdk.io/simapp/params"
+	//appparams "cosmossdk.io/simapp/params"
 	rosettaCmd "cosmossdk.io/tools/rosetta/cmd"
 	dbm "github.com/cometbft/cometbft-db"
 	tmcfg "github.com/cometbft/cometbft/config"
@@ -21,6 +21,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/snapshot"
 	"github.com/cosmos/cosmos-sdk/server"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -45,8 +46,14 @@ const EnvPrefix = "zetacore"
 // NewRootCmd creates a new root command for wasmd. It is called once in the
 // main function.
 
-func NewRootCmd() (*cobra.Command, appparams.EncodingConfig) {
-	encodingConfig := app.MakeEncodingConfig()
+func NewRootCmd() *cobra.Command {
+	app.SetConfig()
+
+	tempApp := app.New(
+		log.NewNopLogger(), dbm.NewMemDB(), nil, true, make(map[int64]bool), "", 0,
+		simtestutil.NewAppOptionsWithFlagHome(app.DefaultNodeHome),
+	)
+	encodingConfig := tempApp.EncodingConfig()
 
 	cfg := sdk.GetConfig()
 	cfg.SetBech32PrefixForAccount(app.Bech32PrefixAccAddr, app.Bech32PrefixAccPub)
@@ -96,7 +103,7 @@ func NewRootCmd() (*cobra.Command, appparams.EncodingConfig) {
 
 	initRootCmd(rootCmd, encodingConfig)
 
-	return rootCmd, encodingConfig
+	return rootCmd
 }
 
 // initAppConfig helps to override default appConfig template and configs.
@@ -119,7 +126,11 @@ func initTmConfig() *tmcfg.Config {
 	return cfg
 }
 
-func initRootCmd(rootCmd *cobra.Command, encodingConfig appparams.EncodingConfig) {
+func initRootCmd(
+	rootCmd *cobra.Command,
+	encodingConfig app.EncodingConfig,
+	// basicManager module.BasicManager,
+) {
 	ac := appCreator{
 		encCfg: encodingConfig,
 	}
@@ -236,7 +247,7 @@ func txCommand() *cobra.Command {
 }
 
 type appCreator struct {
-	encCfg appparams.EncodingConfig
+	encCfg app.EncodingConfig
 }
 
 func (ac appCreator) newApp(
@@ -258,7 +269,7 @@ func (ac appCreator) newApp(
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
 		//cosmoscmd.EncodingConfig(ac.encCfg),
-		ac.encCfg,
+		//ac.encCfg,
 		appOpts,
 		baseappOptions...,
 	)
@@ -286,7 +297,7 @@ func (ac appCreator) appExport(
 			map[int64]bool{},
 			homePath,
 			uint(1),
-			ac.encCfg,
+			//ac.encCfg,
 			appOpts,
 		)
 
@@ -302,7 +313,7 @@ func (ac appCreator) appExport(
 			map[int64]bool{},
 			homePath,
 			uint(1),
-			ac.encCfg,
+			//ac.encCfg,
 			appOpts,
 		)
 	}

@@ -7,7 +7,6 @@ import (
 	"time"
 
 	cosmoserrors "cosmossdk.io/errors"
-	appparams "cosmossdk.io/simapp/params"
 	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
 	tmjson "github.com/cometbft/cometbft/libs/json"
@@ -91,6 +90,7 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
 	evmante "github.com/evmos/ethermint/app/ante"
+	evmenc "github.com/evmos/ethermint/encoding"
 	ethermint "github.com/evmos/ethermint/types"
 	"github.com/evmos/ethermint/x/evm"
 	evmkeeper "github.com/evmos/ethermint/x/evm/keeper"
@@ -251,6 +251,7 @@ type App struct {
 	*baseapp.BaseApp
 
 	cdc               *codec.LegacyAmino
+	txConfig          client.TxConfig
 	appCodec          codec.Codec
 	interfaceRegistry types.InterfaceRegistry
 	invCheckPeriod    uint
@@ -312,12 +313,14 @@ func New(
 	skipUpgradeHeights map[int64]bool,
 	homePath string,
 	invCheckPeriod uint,
-	encodingConfig appparams.EncodingConfig,
+	//encodingConfig appparams.EncodingConfig,
 	appOpts servertypes.AppOptions,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
+	encodingConfig := evmenc.MakeConfig(ModuleBasics)
 	appCodec := encodingConfig.Codec
 	cdc := encodingConfig.Amino
+	txConfig := encodingConfig.TxConfig
 	interfaceRegistry := encodingConfig.InterfaceRegistry
 
 	bApp := baseapp.NewBaseApp(Name, logger, db, encodingConfig.TxConfig.TxDecoder(), baseAppOptions...)
@@ -362,6 +365,7 @@ func New(
 		appCodec:          appCodec,
 		interfaceRegistry: interfaceRegistry,
 		invCheckPeriod:    invCheckPeriod,
+		txConfig:          txConfig,
 		keys:              keys,
 		tkeys:             tkeys,
 		memKeys:           memKeys,
@@ -913,6 +917,14 @@ func (app *App) AppCodec() codec.Codec {
 func (app *App) InterfaceRegistry() types.InterfaceRegistry {
 	return app.interfaceRegistry
 }
+func (app *App) EncodingConfig() EncodingConfig {
+	return EncodingConfig{
+		InterfaceRegistry: app.InterfaceRegistry(),
+		Codec:             app.AppCodec(),
+		TxConfig:          app.TxConfig(),
+		Amino:             app.LegacyAmino(),
+	}
+}
 
 // GetKey returns the KVStoreKey for the provided store key.
 //
@@ -992,6 +1004,10 @@ func (app *App) RegisterTendermintService(clientCtx client.Context) {
 		app.interfaceRegistry,
 		app.Query,
 	)
+}
+
+func (app *App) TxConfig() client.TxConfig {
+	return app.txConfig
 }
 
 // GetMaccPerms returns a copy of the module account permissions
