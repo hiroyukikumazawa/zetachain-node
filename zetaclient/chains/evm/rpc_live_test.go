@@ -198,7 +198,7 @@ After calculation, zetaclient will be able to broadcast updated transaction with
 
 func TestEIP1559TxOnlyMaxFeePerGas(t *testing.T) {
 	// create Sepolia client
-	client, err := ethclient.Dial("https://rpc.ankr.com/eth_sepolia")
+	client, err := ethclient.Dial(URLEthMainnet)
 	//client, err := ethclient.Dial("https://eth-sepolia.g.alchemy.com/v2/m79YhhEuwED9ZOnpS1qFWKN3i2l9tv-d")
 	if err != nil {
 		t.Error(err)
@@ -224,6 +224,11 @@ func TestEIP1559TxOnlyMaxFeePerGas(t *testing.T) {
 	header, err := client.HeaderByNumber(context.TODO(), nil)
 	require.NoError(t, err)
 
+	// get gas price
+	gasPrice, err := client.SuggestGasPrice(context.TODO())
+	require.NoError(t, err)
+	fmt.Printf("GasPrice : %s\n", gasPrice) // this GasPrice will be == BaseFee + GasTipCap
+
 	// estimate gas EIP-1559
 	gasPrice, maxPriorityFeePerGas, maxFeePerGas, err := evm.EstimateGasPriceLondon(client, header.BaseFee)
 	require.NoError(t, err)
@@ -233,6 +238,7 @@ func TestEIP1559TxOnlyMaxFeePerGas(t *testing.T) {
 	fmt.Printf("BaseFee  : %s\n", header.BaseFee)
 	fmt.Printf("GasTipCap: %s\n", maxPriorityFeePerGas)
 	fmt.Printf("GasFeeCap: %s\n", maxFeePerGas)
+	fmt.Printf("GasPrice2: %s\n", gasPrice)
 
 	// create transaction
 	rawTx := ethtypes.NewTx(&ethtypes.DynamicFeeTx{
