@@ -527,26 +527,7 @@ func New(
 	// so that other modules that want to create or claim capabilities afterwards in InitChain
 	// can do so safely.
 	app.mm.SetOrderInitGenesis(
-		authtypes.ModuleName,
-		banktypes.ModuleName,
-		distrtypes.ModuleName,
-		stakingtypes.ModuleName,
-		slashingtypes.ModuleName,
-		govtypes.ModuleName,
-		crisistypes.ModuleName,
-		evmtypes.ModuleName,
-		feemarkettypes.ModuleName,
-		paramstypes.ModuleName,
-		group.ModuleName,
-		genutiltypes.ModuleName,
-		upgradetypes.ModuleName,
-		evidencetypes.ModuleName,
-		vestingtypes.ModuleName,
-		zetaCoreModuleTypes.ModuleName,
-		zetaObserverModuleTypes.ModuleName,
-		fungibleModuleTypes.ModuleName,
-		emissionsModuleTypes.ModuleName,
-		authz.ModuleName,
+		InitGenesisModuleList()...,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)

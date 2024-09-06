@@ -46,7 +46,7 @@ source ~/os-info.sh
 if [ $HOSTNAME != "zetacore0" ]
 then
   echo "Waiting for zetacore0 to create genesis.json"
-  sleep $((7*NUMOFNODES))
+  sleep 400
   echo "genesis.json created"
 fi
 
@@ -114,6 +114,8 @@ then
 
 # 4. Collect all the gentx files in zetacore0 and create the final genesis.json
   zetacored collect-gentxs
+  echo "trying to import data into genesis.json"
+  zetacored parse-genesis-file ~/genesis_export/exported-genesis.json
   zetacored validate-genesis
 # 5. Copy the final genesis.json to all the nodes
   for NODE in "${NODELIST[@]}"; do

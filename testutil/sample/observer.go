@@ -45,6 +45,16 @@ func NodeAccount() *types.NodeAccount {
 	}
 }
 
+func NonceToCCTX(t *testing.T, seed string) types.NonceToCctx {
+	r := newRandFromStringSeed(t, seed)
+	return types.NonceToCctx{
+		ChainId:   r.Int63(),
+		Nonce:     r.Int63(),
+		CctxIndex: StringRandom(r, 64),
+		Tss:       Tss().TssPubkey,
+	}
+}
+
 func CrosschainFlags() *types.CrosschainFlags {
 	return &types.CrosschainFlags{
 		IsInboundEnabled:  true,
