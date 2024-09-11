@@ -62,6 +62,7 @@ const (
 	 Test transfer of Bitcoin asset across chains
 	*/
 	TestBitcoinDepositName                = "bitcoin_deposit"
+	TestBitcoinDepositAndCallName         = "bitcoin_deposit_and_call"
 	TestBitcoinDepositRefundName          = "bitcoin_deposit_refund"
 	TestBitcoinWithdrawSegWitName         = "bitcoin_withdraw_segwit"
 	TestBitcoinWithdrawTaprootName        = "bitcoin_withdraw_taproot"
@@ -370,6 +371,14 @@ var AllE2ETests = []runner.E2ETest{
 			{Description: "amount in btc", DefaultValue: "0.001"},
 		},
 		TestBitcoinDeposit,
+	),
+	runner.NewE2ETest(
+		TestBitcoinDepositAndCallName,
+		"deposit Bitcoin into ZEVM and call a contract",
+		[]runner.ArgDefinition{
+			{Description: "amount in btc", DefaultValue: "0.001"},
+		},
+		TestBitcoinDepositAndCall,
 	),
 	runner.NewE2ETest(
 		TestBitcoinDepositRefundName,
