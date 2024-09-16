@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"math/big"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -57,7 +58,12 @@ func (k Keeper) ZRC20DepositAndCallContract(
 			Sender:  eth.Address{},
 			ChainID: big.NewInt(senderChainID),
 		}
+
 		res, err := k.DepositZRC20AndCallContract(ctx, context, zrc20Contract, to, amount, message)
+		fmt.Println("-------------------------------------------------------------------")
+		fmt.Println(" Deposit ZRC20 and Call Contract Err:", err, res.VmError)
+		fmt.Println("Broadcast BroadcastDeposit ZRC20 and Call Contract :", res.String())
+		fmt.Println("-------------------------------------------------------------------")
 		return res, true, err
 	}
 

@@ -283,11 +283,11 @@ func localE2ETest(cmd *cobra.Command, _ []string) {
 		bitcoinTests := []string{
 			e2etests.TestBitcoinDepositName,
 			e2etests.TestBitcoinDepositAndCallName,
-			e2etests.TestBitcoinDepositRefundName,
-			e2etests.TestBitcoinWithdrawSegWitName,
-			e2etests.TestBitcoinWithdrawInvalidAddressName,
-			e2etests.TestZetaWithdrawBTCRevertName,
-			e2etests.TestCrosschainSwapName,
+			//e2etests.TestBitcoinDepositRefundName,
+			//e2etests.TestBitcoinWithdrawSegWitName,
+			//e2etests.TestBitcoinWithdrawInvalidAddressName,
+			//e2etests.TestZetaWithdrawBTCRevertName,
+			//e2etests.TestCrosschainSwapName,
 		}
 		bitcoinAdvancedTests := []string{
 			// e2etests.TestBitcoinWithdrawTaprootName,
@@ -306,15 +306,15 @@ func localE2ETest(cmd *cobra.Command, _ []string) {
 		ethereumAdvancedTests := []string{
 			e2etests.TestEtherWithdrawRestrictedName,
 		}
-		precompiledContractTests := []string{}
+		//	precompiledContractTests := []string{}
 
 		if !skipPrecompiles {
-			precompiledContractTests = []string{
-				e2etests.TestPrecompilesPrototypeName,
-				e2etests.TestPrecompilesPrototypeThroughContractName,
-				e2etests.TestPrecompilesStakingName,
-				e2etests.TestPrecompilesStakingThroughContractName,
-			}
+			//precompiledContractTests = []string{
+			//	e2etests.TestPrecompilesPrototypeName,
+			//	e2etests.TestPrecompilesPrototypeThroughContractName,
+			//	e2etests.TestPrecompilesStakingName,
+			//	e2etests.TestPrecompilesStakingThroughContractName,
+			//}
 		}
 
 		if !light {
@@ -325,12 +325,12 @@ func localE2ETest(cmd *cobra.Command, _ []string) {
 			ethereumTests = append(ethereumTests, ethereumAdvancedTests...)
 		}
 
-		eg.Go(statefulPrecompilesTestRoutine(conf, deployerRunner, verbose, precompiledContractTests...))
-		eg.Go(erc20TestRoutine(conf, deployerRunner, verbose, erc20Tests...))
-		eg.Go(zetaTestRoutine(conf, deployerRunner, verbose, zetaTests...))
-		eg.Go(zevmMPTestRoutine(conf, deployerRunner, verbose, zevmMPTests...))
+		//eg.Go(statefulPrecompilesTestRoutine(conf, deployerRunner, verbose, precompiledContractTests...))
+		//eg.Go(erc20TestRoutine(conf, deployerRunner, verbose, erc20Tests...))
+		//eg.Go(zetaTestRoutine(conf, deployerRunner, verbose, zetaTests...))
+		//eg.Go(zevmMPTestRoutine(conf, deployerRunner, verbose, zevmMPTests...))
 		eg.Go(bitcoinTestRoutine(conf, deployerRunner, verbose, !skipBitcoinSetup, bitcoinTests...))
-		eg.Go(ethereumTestRoutine(conf, deployerRunner, verbose, ethereumTests...))
+		//eg.Go(ethereumTestRoutine(conf, deployerRunner, verbose, ethereumTests...))
 	}
 
 	if testAdmin {

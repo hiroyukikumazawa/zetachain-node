@@ -36,7 +36,7 @@ import (
 
 var (
 	BigIntZero                 = big.NewInt(0)
-	ZEVMGasLimitDepositAndCall = big.NewInt(1_000_000)
+	ZEVMGasLimitDepositAndCall = big.NewInt(60_000)
 	ZEVMGasLimitConnectorCall  = big.NewInt(1_000_000)
 )
 
