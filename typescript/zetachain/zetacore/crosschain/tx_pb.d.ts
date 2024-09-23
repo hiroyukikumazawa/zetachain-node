@@ -429,6 +429,13 @@ export declare class MsgVoteGasPrice extends Message<MsgVoteGasPrice> {
    */
   blockNumber: bigint;
 
+  /**
+   * unused
+   *
+   * @generated from field: string supply = 5;
+   */
+  supply: string;
+
   constructor(data?: PartialMessage<MsgVoteGasPrice>);
 
   static readonly runtime: typeof proto3;
