@@ -16,6 +16,7 @@ type Clients struct {
 
 	// the RPC clients for external chains in the localnet
 	BtcRPC  *rpcclient.Client
+	SigRPC  *rpcclient.Client
 	Solana  *rpc.Client
 	Evm     *ethclient.Client
 	EvmAuth *bind.TransactOpts

@@ -1,6 +1,8 @@
 package bitcoin
 
 import (
+	"encoding/hex"
+	"fmt"
 	"math/rand"
 	"testing"
 
@@ -65,10 +67,34 @@ func generateKeyPair(t *testing.T, net *chaincfg.Params) (*btcec.PrivateKey, btc
 	pubKeyHash := btcutil.Hash160(privateKey.PubKey().SerializeCompressed())
 	addr, err := btcutil.NewAddressWitnessPubKeyHash(pubKeyHash, net)
 	require.NoError(t, err)
-	//fmt.Printf("New address: %s\n", addr.EncodeAddress())
+	privKeyHex := fmt.Sprintf("%x", privateKey.Serialize())
+	fmt.Printf("New private key: %s\n", privKeyHex)
+	fmt.Printf("New address: %s\n", addr.EncodeAddress())
 	pkScript, err := PayToAddrScript(addr)
 	require.NoError(t, err)
+
+	// restore private key and address
+	// Step 1: Decode the hex string into a byte slice
+	privKeyBytes, err := hex.DecodeString("03028f6a3d3c7b418043e5b5f36c0ccb9e46c4726cd10ecf780d04566cc3af60")
+	require.NoError(t, err)
+
+	// Step 2: Reconstruct the secp256k1 PrivateKey from the byte slice
+	privKey, _ := btcec.PrivKeyFromBytes(privKeyBytes)
+
+	// Step 3: Derive the public key from the private key
+	pubKeyHash = btcutil.Hash160(privKey.PubKey().SerializeCompressed())
+	addr, err = btcutil.NewAddressWitnessPubKeyHash(pubKeyHash, &chaincfg.RegressionNetParams)
+	require.NoError(t, err)
+	fmt.Printf("Restored address: %s\n", addr.EncodeAddress())
+
 	return privateKey, addr, pkScript
+}
+
+func TestKeygen(t *testing.T) {
+	// Generate payer/payee private keys and P2WPKH addresss
+	privateKey, _, payerScript := generateKeyPair(t, &chaincfg.SigNetParams)
+	require.NotNil(t, privateKey)
+	require.NotNil(t, payerScript)
 }
 
 // getTestAddrScript returns hard coded test address scripts by script type
@@ -181,7 +207,7 @@ func signTx(t *testing.T, tx *wire.MsgTx, payerScript []byte, privateKey *btcec.
 
 func TestOutboundSize2In3Out(t *testing.T) {
 	// Generate payer/payee private keys and P2WPKH addresss
-	privateKey, _, payerScript := generateKeyPair(t, &chaincfg.TestNet3Params)
+	privateKey, _, payerScript := generateKeyPair(t, &chaincfg.SigNetParams)
 	_, payee, payeeScript := generateKeyPair(t, &chaincfg.TestNet3Params)
 
 	// 2 example UTXO txids to use in the test.

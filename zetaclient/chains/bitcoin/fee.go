@@ -224,9 +224,14 @@ func CalcDepositorFee(
 	rawResult *btcjson.TxRawResult,
 	netParams *chaincfg.Params,
 ) (float64, error) {
+	// use 0 fee for Signet
+	if netParams.Name == chaincfg.SigNetParams.Name {
+		return 0, nil
+	}
+
 	// use default fee for regnet
 	if netParams.Name == chaincfg.RegressionNetParams.Name {
-		return DefaultDepositorFee, nil
+		return 0, nil
 	}
 
 	// get fee rate of the transaction

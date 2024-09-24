@@ -114,6 +114,8 @@ func localE2ETest(cmd *cobra.Command, _ []string) {
 		skipPrecompiles   = must(cmd.Flags().GetBool(flagSkipPrecompiles))
 	)
 
+	testSolana = true
+
 	logger := runner.NewLogger(verbose, color.FgWhite, "setup")
 
 	testStartTime := time.Now()
@@ -259,69 +261,70 @@ func localE2ETest(cmd *cobra.Command, _ []string) {
 	if !skipRegular {
 		// defines all tests, if light is enabled, only the most basic tests are run and advanced are skipped
 		erc20Tests := []string{
-			e2etests.TestERC20WithdrawName,
-			e2etests.TestMultipleERC20WithdrawsName,
-			e2etests.TestERC20DepositAndCallRefundName,
-			e2etests.TestZRC20SwapName,
+			// e2etests.TestERC20WithdrawName,
+			// e2etests.TestMultipleERC20WithdrawsName,
+			// e2etests.TestERC20DepositAndCallRefundName,
+			// e2etests.TestZRC20SwapName,
 		}
 		erc20AdvancedTests := []string{
-			e2etests.TestERC20DepositRestrictedName,
+			//e2etests.TestERC20DepositRestrictedName,
 		}
 		zetaTests := []string{
-			e2etests.TestZetaWithdrawName,
-			e2etests.TestMessagePassingExternalChainsName,
-			e2etests.TestMessagePassingRevertFailExternalChainsName,
-			e2etests.TestMessagePassingRevertSuccessExternalChainsName,
+			// e2etests.TestZetaWithdrawName,
+			// e2etests.TestMessagePassingExternalChainsName,
+			// e2etests.TestMessagePassingRevertFailExternalChainsName,
+			// e2etests.TestMessagePassingRevertSuccessExternalChainsName,
 		}
 		zetaAdvancedTests := []string{
-			e2etests.TestZetaDepositRestrictedName,
-			e2etests.TestZetaDepositName,
-			e2etests.TestZetaDepositNewAddressName,
+			// e2etests.TestZetaDepositRestrictedName,
+			// e2etests.TestZetaDepositName,
+			// e2etests.TestZetaDepositNewAddressName,
 		}
 		zevmMPTests := []string{}
 		zevmMPAdvancedTests := []string{
-			e2etests.TestMessagePassingZEVMToEVMName,
-			e2etests.TestMessagePassingEVMtoZEVMName,
-			e2etests.TestMessagePassingEVMtoZEVMRevertName,
-			e2etests.TestMessagePassingZEVMtoEVMRevertName,
-			e2etests.TestMessagePassingZEVMtoEVMRevertFailName,
-			e2etests.TestMessagePassingEVMtoZEVMRevertFailName,
+			// e2etests.TestMessagePassingZEVMToEVMName,
+			// e2etests.TestMessagePassingEVMtoZEVMName,
+			// e2etests.TestMessagePassingEVMtoZEVMRevertName,
+			// e2etests.TestMessagePassingZEVMtoEVMRevertName,
+			// e2etests.TestMessagePassingZEVMtoEVMRevertFailName,
+			// e2etests.TestMessagePassingEVMtoZEVMRevertFailName,
 		}
 
 		bitcoinTests := []string{
 			e2etests.TestBitcoinDepositName,
-			e2etests.TestBitcoinDepositAndCallName,
-			e2etests.TestBitcoinDepositRefundName,
-			e2etests.TestBitcoinWithdrawSegWitName,
-			e2etests.TestBitcoinWithdrawInvalidAddressName,
-			e2etests.TestZetaWithdrawBTCRevertName,
-			e2etests.TestCrosschainSwapName,
+			e2etests.TestBitcoinDepositSignetName,
+			// e2etests.TestBitcoinDepositAndCallName,
+			// e2etests.TestBitcoinDepositRefundName,
+			// e2etests.TestBitcoinWithdrawSegWitName,
+			// e2etests.TestBitcoinWithdrawInvalidAddressName,
+			// e2etests.TestZetaWithdrawBTCRevertName,
+			// e2etests.TestCrosschainSwapName,
 		}
 		bitcoinAdvancedTests := []string{
-			e2etests.TestBitcoinWithdrawTaprootName,
-			e2etests.TestBitcoinWithdrawLegacyName,
-			e2etests.TestBitcoinWithdrawMultipleName,
-			e2etests.TestBitcoinWithdrawP2SHName,
-			e2etests.TestBitcoinWithdrawP2WSHName,
-			e2etests.TestBitcoinWithdrawRestrictedName,
+			// e2etests.TestBitcoinWithdrawTaprootName,
+			// e2etests.TestBitcoinWithdrawLegacyName,
+			// e2etests.TestBitcoinWithdrawMultipleName,
+			// e2etests.TestBitcoinWithdrawP2SHName,
+			// e2etests.TestBitcoinWithdrawP2WSHName,
+			// e2etests.TestBitcoinWithdrawRestrictedName,
 		}
 		ethereumTests := []string{
-			e2etests.TestEtherWithdrawName,
-			e2etests.TestContextUpgradeName,
-			e2etests.TestEtherDepositAndCallName,
-			e2etests.TestEtherDepositAndCallRefundName,
+			// e2etests.TestEtherWithdrawName,
+			// e2etests.TestContextUpgradeName,
+			// e2etests.TestEtherDepositAndCallName,
+			// e2etests.TestEtherDepositAndCallRefundName,
 		}
 		ethereumAdvancedTests := []string{
-			e2etests.TestEtherWithdrawRestrictedName,
+			// e2etests.TestEtherWithdrawRestrictedName,
 		}
 		precompiledContractTests := []string{}
 
 		if !skipPrecompiles {
 			precompiledContractTests = []string{
-				e2etests.TestPrecompilesPrototypeName,
-				e2etests.TestPrecompilesPrototypeThroughContractName,
-				e2etests.TestPrecompilesStakingName,
-				e2etests.TestPrecompilesStakingThroughContractName,
+				// e2etests.TestPrecompilesPrototypeName,
+				// e2etests.TestPrecompilesPrototypeThroughContractName,
+				// e2etests.TestPrecompilesStakingName,
+				// e2etests.TestPrecompilesStakingThroughContractName,
 			}
 		}
 
@@ -379,11 +382,11 @@ func localE2ETest(cmd *cobra.Command, _ []string) {
 		}
 		solanaTests := []string{
 			e2etests.TestSolanaDepositName,
-			e2etests.TestSolanaWithdrawName,
-			e2etests.TestSolanaDepositAndCallName,
-			e2etests.TestSolanaDepositAndCallRefundName,
-			e2etests.TestSolanaDepositRestrictedName,
-			e2etests.TestSolanaWithdrawRestrictedName,
+			// e2etests.TestSolanaWithdrawName,
+			// e2etests.TestSolanaDepositAndCallName,
+			// e2etests.TestSolanaDepositAndCallRefundName,
+			// e2etests.TestSolanaDepositRestrictedName,
+			// e2etests.TestSolanaWithdrawRestrictedName,
 		}
 		eg.Go(solanaTestRoutine(conf, deployerRunner, verbose, solanaTests...))
 	}

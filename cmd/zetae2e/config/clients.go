@@ -24,7 +24,11 @@ import (
 func getClientsFromConfig(ctx context.Context, conf config.Config, account config.Account) (runner.Clients, error) {
 	btcRPCClient, err := getBtcClient(conf.RPCs.Bitcoin)
 	if err != nil {
-		return runner.Clients{}, fmt.Errorf("failed to get btc client: %w", err)
+		return runner.Clients{}, fmt.Errorf("failed to get btc Regnet client: %w", err)
+	}
+	sigRPCClient, err := getBtcClient(conf.RPCs.Signet)
+	if err != nil {
+		return runner.Clients{}, fmt.Errorf("failed to get btc Signet client: %w", err)
 	}
 
 	evmClient, evmAuth, err := getEVMClient(ctx, conf.RPCs.EVM, account)
@@ -61,6 +65,7 @@ func getClientsFromConfig(ctx context.Context, conf config.Config, account confi
 	return runner.Clients{
 		Zetacore: zetaCoreClients,
 		BtcRPC:   btcRPCClient,
+		SigRPC:   sigRPCClient,
 		Solana:   solanaClient,
 		TON:      tonClient,
 		Evm:      evmClient,
@@ -76,6 +81,7 @@ func getBtcClient(rpcConf config.BitcoinRPC) (*rpcclient.Client, error) {
 	switch rpcConf.Params {
 	case config.Regnet:
 	case config.Testnet3:
+	case config.Signet:
 		param = "testnet3"
 	case config.Mainnet:
 		param = "mainnet"

@@ -17,9 +17,9 @@ additional_accounts:
     evm_address: "0x8Ae229198eCE3c889C07DB648Ec7C30E6051592c"
     private_key: "105460aebf71b10bfdb710ef5aa6d2932ee6ff6fc317ac9c24e0979903b10a5d"
   user_bitcoin:
-    bech32_address: "zeta19q7czqysah6qg0n4y3l2a08gfzqxydla492v80"
-    evm_address: "0x283d810090EdF4043E75247eAeBcE848806237fD"
-    private_key: "7bb523963ee2c78570fb6113d886a4184d42565e8847f1cb639f5f5e2ef5b37a"
+    bech32_address: "zeta1c2tdw5zctutwvl2s3cwp0q7d26av0un78uwc79"
+    evm_address: "0xC296D750585F16E67d508e1C1783cd56BaC7F27e"
+    private_key: "03028f6a3d3c7b418043e5b5f36c0ccb9e46c4726cd10ecf780d04566cc3af60"
   user_solana:
     bech32_address: "zeta1zqlajgj0qr8rqylf2c572t0ux8vqt45d4zngpm"
     evm_address: "0x103FD9224F00ce3013e95629e52DFc31D805D68d"
@@ -90,6 +90,13 @@ rpcs:
     http_post_mode: true
     disable_tls: true
     params: regnet
+  signet:
+    host: "bitcoin:18443"
+    user: "smoketest"
+    pass: "123"
+    http_post_mode: true
+    disable_tls: true
+    params: signet
   solana: "http://solana:8899"
   ton_sidecar_url: "http://ton:8000"
   zetacore_grpc: "zetacore0:9090"

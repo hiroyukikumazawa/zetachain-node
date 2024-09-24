@@ -94,6 +94,7 @@ type RPCs struct {
 	Zevm          string     `yaml:"zevm"`
 	EVM           string     `yaml:"evm"`
 	Bitcoin       BitcoinRPC `yaml:"bitcoin"`
+	Signet        BitcoinRPC `yaml:"signet"`
 	Solana        string     `yaml:"solana"`
 	TONSidecarURL string     `yaml:"ton_sidecar_url"`
 	ZetaCoreGRPC  string     `yaml:"zetacore_grpc"`
@@ -251,6 +252,7 @@ func (a PolicyAccounts) AsSlice() []Account {
 func (c Config) Validate() error {
 	if c.RPCs.Bitcoin.Params != Mainnet &&
 		c.RPCs.Bitcoin.Params != Testnet3 &&
+		c.RPCs.Bitcoin.Params != Signet &&
 		c.RPCs.Bitcoin.Params != Regnet {
 		return errors.New("invalid bitcoin params")
 	}
@@ -412,6 +414,7 @@ type BitcoinNetworkType string
 const (
 	Mainnet  BitcoinNetworkType = "mainnet"
 	Testnet3 BitcoinNetworkType = "testnet3"
+	Signet   BitcoinNetworkType = "signet"
 	Regnet   BitcoinNetworkType = "regnet"
 )
 
@@ -422,6 +425,8 @@ func (bnt BitcoinNetworkType) GetParams() (chaincfg.Params, error) {
 		return chaincfg.MainNetParams, nil
 	case Testnet3:
 		return chaincfg.TestNet3Params, nil
+	case Signet:
+		return chaincfg.SigNetParams, nil
 	case Regnet:
 		return chaincfg.RegressionNetParams, nil
 	default:

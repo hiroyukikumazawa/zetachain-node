@@ -83,6 +83,7 @@ type E2ERunner struct {
 	ZEVMClient   *ethclient.Client
 	EVMClient    *ethclient.Client
 	BtcRPCClient *rpcclient.Client
+	SigRPCClient *rpcclient.Client
 	SolanaClient *rpc.Client
 
 	// zetacored grpc clients
@@ -153,6 +154,7 @@ type E2ERunner struct {
 	CtxCancel     context.CancelFunc
 	Logger        *Logger
 	BitcoinParams *chaincfg.Params
+	SignetParams  *chaincfg.Params
 	mutex         sync.Mutex
 
 	// evm v2
@@ -201,6 +203,7 @@ func NewE2ERunner(
 		EVMAuth:      clients.EvmAuth,
 		ZEVMAuth:     clients.ZevmAuth,
 		BtcRPCClient: clients.BtcRPC,
+		SigRPCClient: clients.SigRPC,
 		SolanaClient: clients.Solana,
 
 		Logger: logger,

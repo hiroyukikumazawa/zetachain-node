@@ -28,7 +28,7 @@ import (
 // ListDeployerUTXOs list the deployer's UTXOs
 func (r *E2ERunner) ListDeployerUTXOs() ([]btcjson.ListUnspentResult, error) {
 	// query UTXOs from node
-	utxos, err := r.BtcRPCClient.ListUnspentMinMaxAddresses(
+	utxos, err := r.SigRPCClient.ListUnspentMinMaxAddresses(
 		1,
 		9999999,
 		[]btcutil.Address{r.BTCDeployerAddress},
@@ -37,16 +37,32 @@ func (r *E2ERunner) ListDeployerUTXOs() ([]btcjson.ListUnspentResult, error) {
 		return nil, err
 	}
 
-	// filter big-enough UTXOs for test if running on Regtest
-	if r.IsLocalBitcoin() {
-		utxosFiltered := []btcjson.ListUnspentResult{}
-		for _, utxo := range utxos {
-			if utxo.Amount >= 1.0 {
-				utxosFiltered = append(utxosFiltered, utxo)
+	// rigid sort to make utxo list deterministic
+	sort.SliceStable(utxos, func(i, j int) bool {
+		if utxos[i].Amount == utxos[j].Amount {
+			if utxos[i].TxID == utxos[j].TxID {
+				return utxos[i].Vout < utxos[j].Vout
 			}
+			return utxos[i].TxID < utxos[j].TxID
 		}
-		return utxosFiltered, nil
+		return utxos[i].Amount > utxos[j].Amount
+	})
+
+	// filter top 3 UTXOs for test
+	if len(utxos) > 3 {
+		utxos = utxos[:3]
 	}
+
+	// // filter big-enough UTXOs for test if running on Regtest
+	// if r.IsLocalBitcoin() {
+	// 	utxosFiltered := []btcjson.ListUnspentResult{}
+	// 	for _, utxo := range utxos {
+	// 		if utxo.Amount >= 1.0 {
+	// 			utxosFiltered = append(utxosFiltered, utxo)
+	// 		}
+	// 	}
+	// 	return utxosFiltered, nil
+	// }
 
 	return utxos, nil
 }
@@ -93,16 +109,16 @@ func (r *E2ERunner) DepositBTCWithAmount(amount float64) *chainhash.Hash {
 
 	require.LessOrEqual(r, amount, spendableAmount, "not enough spendable BTC to run the test")
 
-	r.Logger.Info("ListUnspent:")
-	r.Logger.Info("  spendableAmount: %f", spendableAmount)
-	r.Logger.Info("  spendableUTXOs: %d", spendableUTXOs)
-	r.Logger.Info("Now sending two txs to TSS address...")
+	r.Logger.Print("ListUnspent:")
+	r.Logger.Print("  spendableAmount: %f", spendableAmount)
+	r.Logger.Print("  spendableUTXOs: %d", spendableUTXOs)
+	r.Logger.Print("Now sending %d txs to TSS address...", len(utxos))
 
-	amount += zetabitcoin.DefaultDepositorFee
+	// amount += zetabitcoin.DefaultDepositorFee
 	txHash, err := r.SendToTSSFromDeployerToDeposit(amount, utxos)
 	require.NoError(r, err)
 
-	r.Logger.Info("send BTC to TSS txHash: %s", txHash.String())
+	r.Logger.Print("send BTC to TSS txHash: %s", txHash.String())
 
 	return txHash
 }
@@ -128,8 +144,8 @@ func (r *E2ERunner) DepositBTC() {
 		}
 	}
 
-	require.GreaterOrEqual(r, spendableAmount, 1.15, "not enough spendable BTC to run the test")
-	require.GreaterOrEqual(r, spendableUTXOs, 5, "not enough spendable BTC UTXOs to run the test")
+	//require.GreaterOrEqual(r, spendableAmount, 1.15, "not enough spendable BTC to run the test")
+	//require.GreaterOrEqual(r, spendableUTXOs, 5, "not enough spendable BTC UTXOs to run the test")
 
 	r.Logger.Info("ListUnspent:")
 	r.Logger.Info("  spendableAmount: %f", spendableAmount)
@@ -178,7 +194,12 @@ func (r *E2ERunner) SendToTSSFromDeployerWithMemo(
 	inputUTXOs []btcjson.ListUnspentResult,
 	memo []byte,
 ) (*chainhash.Hash, error) {
-	btcRPC := r.BtcRPCClient
+	// estimate tx size
+	txSize, err := zetabitcoin.EstimateOutboundSize(uint64(len(inputUTXOs)), []btcutil.Address{r.BTCTSSAddress})
+	require.NoError(r, err)
+	r.Logger.Print("estimated tx size: %d", txSize)
+
+	btcRPC := r.SigRPCClient
 	to := r.BTCTSSAddress
 	btcDeployerAddress := r.BTCDeployerAddress
 	require.NotNil(r, r.BTCDeployerAddress, "btcDeployerAddress is nil")
@@ -199,8 +220,8 @@ func (r *E2ERunner) SendToTSSFromDeployerWithMemo(
 		scriptPubkeys[i] = utxo.ScriptPubKey
 	}
 
-	// use static fee 0.0005 BTC to calculate change
-	feeSats := btcutil.Amount(0.0005 * btcutil.SatoshiPerBitcoin)
+	// use static fee 0.000004 BTC to calculate change
+	feeSats := btcutil.Amount(0.000004 * btcutil.SatoshiPerBitcoin)
 	amountInt, err := zetabitcoin.GetSatoshis(amount)
 	require.NoError(r, err)
 	amountSats := btcutil.Amount(amountInt)

@@ -31,7 +31,6 @@ func RunnerFromConfig(
 		ctxCancel,
 		account,
 		e2eClients,
-
 		logger,
 		opts...,
 	)
@@ -48,6 +47,13 @@ func RunnerFromConfig(
 		return nil, fmt.Errorf("failed to get bitcoin params: %w", err)
 	}
 	newRunner.BitcoinParams = &chainParams
+
+	// set signet params
+	chainParamsSignet, err := conf.RPCs.Signet.Params.GetParams()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get signet params: %w", err)
+	}
+	newRunner.SignetParams = &chainParamsSignet
 
 	return newRunner, err
 }

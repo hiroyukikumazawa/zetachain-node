@@ -27,13 +27,13 @@ func (r *E2ERunner) AddTSSToNode() {
 }
 
 func (r *E2ERunner) SetupBitcoinAccount(initNetwork bool) {
-	r.Logger.Print("⚙️ setting up Bitcoin account")
+	r.Logger.Print("⚙️ setting up Bitcoin account, initNetwork: %t", initNetwork)
 	startTime := time.Now()
 	defer func() {
 		r.Logger.Print("✅ Bitcoin account setup in %s", time.Since(startTime))
 	}()
 
-	_, err := r.BtcRPCClient.CreateWallet(r.Name, rpcclient.WithCreateWalletBlank())
+	_, err := r.SigRPCClient.CreateWallet(r.Name, rpcclient.WithCreateWalletBlank())
 	if err != nil {
 		require.ErrorContains(r, err, "Database already exists")
 	}
@@ -42,7 +42,7 @@ func (r *E2ERunner) SetupBitcoinAccount(initNetwork bool) {
 
 	if initNetwork {
 		// import the TSS address
-		err = r.BtcRPCClient.ImportAddress(r.BTCTSSAddress.EncodeAddress())
+		err = r.SigRPCClient.ImportAddress(r.BTCTSSAddress.EncodeAddress())
 		require.NoError(r, err)
 
 		// mine some blocks to get some BTC into the deployer address
@@ -83,13 +83,14 @@ func (r *E2ERunner) GetBtcAddress() (string, string, error) {
 func (r *E2ERunner) SetBtcAddress(name string, rescan bool) {
 	skBytes, err := hex.DecodeString(r.Account.RawPrivateKey.String())
 	require.NoError(r, err)
+	r.Logger.Print("BTCDeployerAddress private key: %s", r.Account.RawPrivateKey.String())
 
 	sk, _ := btcec.PrivKeyFromBytes(skBytes)
 	privkeyWIF, err := btcutil.NewWIF(sk, r.BitcoinParams, true)
 	require.NoError(r, err)
 
 	if rescan {
-		err := r.BtcRPCClient.ImportPrivKeyRescan(privkeyWIF, name, true)
+		err := r.SigRPCClient.ImportPrivKeyRescan(privkeyWIF, name, true)
 		require.NoError(r, err, "failed to execute ImportPrivKeyRescan")
 	}
 
@@ -99,5 +100,5 @@ func (r *E2ERunner) SetBtcAddress(name string, rescan bool) {
 	)
 	require.NoError(r, err)
 
-	r.Logger.Info("BTCDeployerAddress: %s", r.BTCDeployerAddress.EncodeAddress())
+	r.Logger.Print("BTCDeployerAddress: %s", r.BTCDeployerAddress.EncodeAddress())
 }
