@@ -485,6 +485,28 @@ func (zts ZetaTxServer) DeployZRC20s(
 		return "", err
 	}
 
+	// deploy Signet btc zrc20
+	res, err = zts.BroadcastTx(deployerAccount, fungibletypes.NewMsgDeployFungibleCoinZRC20(
+		deployerAddr,
+		"",
+		chains.BitcoinSignetTestnet.ChainId,
+		8,
+		"BTC",
+		"sBTC",
+		coin.CoinType_Gas,
+		100000,
+	))
+	if err != nil {
+		return "", fmt.Errorf("failed to deploy Signet btc zrc20: %s", err.Error())
+	}
+	zrc20, err = fetchZRC20FromDeployResponse(res)
+	if err != nil {
+		return "", err
+	}
+	if err := zts.InitializeLiquidityCap(zrc20); err != nil {
+		return "", err
+	}
+
 	// deploy sol zrc20
 	res, err = zts.BroadcastTx(deployerAccount, fungibletypes.NewMsgDeployFungibleCoinZRC20(
 		deployerAddr,

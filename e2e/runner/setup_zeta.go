@@ -190,6 +190,7 @@ func (r *E2ERunner) SetZEVMZRC20s() {
 	// set ZRC20 contracts
 	r.SetupETHZRC20()
 	r.SetupBTCZRC20()
+	r.SetupSigBTCZRC20()
 	r.SetupSOLZRC20()
 }
 
@@ -221,6 +222,20 @@ func (r *E2ERunner) SetupBTCZRC20() {
 	BTCZRC20, err := zrc20.NewZRC20(BTCZRC20Addr, r.ZEVMClient)
 	require.NoError(r, err)
 	r.BTCZRC20 = BTCZRC20
+}
+
+// SetupSigBTCZRC20 sets up the Signet BTC ZRC20 in the runner from the values queried from the chain
+func (r *E2ERunner) SetupSigBTCZRC20() {
+	SigZRC20Addr, err := r.SystemContract.GasCoinZRC20ByChainId(
+		&bind.CallOpts{},
+		big.NewInt(chains.BitcoinSignetTestnet.ChainId),
+	)
+	require.NoError(r, err)
+	r.SigZRC20Addr = SigZRC20Addr
+	r.Logger.Info("SigZRC20Addr: %s", SigZRC20Addr.Hex())
+	SigZRC20, err := zrc20.NewZRC20(SigZRC20Addr, r.ZEVMClient)
+	require.NoError(r, err)
+	r.SigZRC20 = SigZRC20
 }
 
 // SetupSOLZRC20 sets up the SOL ZRC20 in the runner from the values queried from the chain

@@ -299,6 +299,24 @@ func GetDefaultBtcRegtestChainParams() *ChainParams {
 		IsSupported:                 false,
 	}
 }
+func GetDefaultBtcSignetChainParams() *ChainParams {
+	return &ChainParams{
+		ChainId:                     chains.BitcoinSignetTestnet.ChainId,
+		ConfirmationCount:           1,
+		ZetaTokenContractAddress:    constant.EVMZeroAddress,
+		ConnectorContractAddress:    constant.EVMZeroAddress,
+		Erc20CustodyContractAddress: constant.EVMZeroAddress,
+		GasPriceTicker:              10,
+		WatchUtxoTicker:             10,
+		InboundTicker:               3,
+		OutboundTicker:              10,
+		OutboundScheduleInterval:    10,
+		OutboundScheduleLookahead:   1,
+		BallotThreshold:             DefaultBallotThreshold,
+		MinObserverDelegation:       DefaultMinObserverDelegation,
+		IsSupported:                 false,
+	}
+}
 func GetDefaultSolanaLocalnetChainParams() *ChainParams {
 	return &ChainParams{
 		ChainId:                     chains.SolanaLocalnet.ChainId,

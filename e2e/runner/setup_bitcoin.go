@@ -33,7 +33,7 @@ func (r *E2ERunner) SetupBitcoinAccount(initNetwork bool) {
 		r.Logger.Print("✅ Bitcoin account setup in %s", time.Since(startTime))
 	}()
 
-	_, err := r.SigRPCClient.CreateWallet(r.Name, rpcclient.WithCreateWalletBlank())
+	_, err := r.BtcRPCClient.CreateWallet(r.Name, rpcclient.WithCreateWalletBlank())
 	if err != nil {
 		require.ErrorContains(r, err, "Database already exists")
 	}
@@ -42,7 +42,7 @@ func (r *E2ERunner) SetupBitcoinAccount(initNetwork bool) {
 
 	if initNetwork {
 		// import the TSS address
-		err = r.SigRPCClient.ImportAddress(r.BTCTSSAddress.EncodeAddress())
+		err = r.BtcRPCClient.ImportAddress(r.BTCTSSAddress.EncodeAddress())
 		require.NoError(r, err)
 
 		// mine some blocks to get some BTC into the deployer address
@@ -90,7 +90,7 @@ func (r *E2ERunner) SetBtcAddress(name string, rescan bool) {
 	require.NoError(r, err)
 
 	if rescan {
-		err := r.SigRPCClient.ImportPrivKeyRescan(privkeyWIF, name, true)
+		err := r.BtcRPCClient.ImportPrivKeyRescan(privkeyWIF, name, true)
 		require.NoError(r, err, "failed to execute ImportPrivKeyRescan")
 	}
 

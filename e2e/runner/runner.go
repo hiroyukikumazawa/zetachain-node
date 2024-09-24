@@ -125,7 +125,9 @@ type E2ERunner struct {
 	ETHZRC20Addr         ethcommon.Address
 	ETHZRC20             *zrc20.ZRC20
 	BTCZRC20Addr         ethcommon.Address
+	SigZRC20Addr         ethcommon.Address
 	BTCZRC20             *zrc20.ZRC20
+	SigZRC20             *zrc20.ZRC20
 	SOLZRC20Addr         ethcommon.Address
 	SOLZRC20             *zrc20.ZRC20
 	UniswapV2FactoryAddr ethcommon.Address
@@ -361,6 +363,7 @@ func (r *E2ERunner) PrintContractAddresses() {
 	r.Logger.Print("ETHZRC20:       %s", r.ETHZRC20Addr.Hex())
 	r.Logger.Print("ERC20ZRC20:     %s", r.ERC20ZRC20Addr.Hex())
 	r.Logger.Print("BTCZRC20:       %s", r.BTCZRC20Addr.Hex())
+	r.Logger.Print("SigZRC20:       %s", r.SigZRC20Addr.Hex())
 	r.Logger.Print("SOLZRC20:       %s", r.SOLZRC20Addr.Hex())
 	r.Logger.Print("UniswapFactory: %s", r.UniswapV2FactoryAddr.Hex())
 	r.Logger.Print("UniswapRouter:  %s", r.UniswapV2RouterAddr.Hex())

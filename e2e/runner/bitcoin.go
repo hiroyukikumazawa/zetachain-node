@@ -28,7 +28,7 @@ import (
 // ListDeployerUTXOs list the deployer's UTXOs
 func (r *E2ERunner) ListDeployerUTXOs() ([]btcjson.ListUnspentResult, error) {
 	// query UTXOs from node
-	utxos, err := r.SigRPCClient.ListUnspentMinMaxAddresses(
+	utxos, err := r.BtcRPCClient.ListUnspentMinMaxAddresses(
 		1,
 		9999999,
 		[]btcutil.Address{r.BTCDeployerAddress},
@@ -199,7 +199,7 @@ func (r *E2ERunner) SendToTSSFromDeployerWithMemo(
 	require.NoError(r, err)
 	r.Logger.Print("estimated tx size: %d", txSize)
 
-	btcRPC := r.SigRPCClient
+	btcRPC := r.BtcRPCClient
 	to := r.BTCTSSAddress
 	btcDeployerAddress := r.BTCDeployerAddress
 	require.NotNil(r, r.BTCDeployerAddress, "btcDeployerAddress is nil")
