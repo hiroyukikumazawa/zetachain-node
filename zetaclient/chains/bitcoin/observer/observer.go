@@ -485,6 +485,15 @@ func (ob *Observer) LoadLastBlockScanned() error {
 	if chains.IsBitcoinRegnet(ob.Chain().ChainId) {
 		ob.WithLastBlockScanned(RegnetStartBlock)
 	}
+
+	// scan Signet from any custom block that contains a deposit
+	// https://blockstream.info/testnet/tx/5df95e59f68a94fa2339e7553cb2fb193a42511a82359c71c734dcd2c977bcc7
+	// set last scanned block 1 block before the test transaction
+	customBlock := uint64(2863089)
+	if ob.Chain().ChainId == chains.BitcoinSignetTestnet.ChainId {
+		ob.WithLastBlockScanned(customBlock - 1)
+	}
+
 	ob.Logger().Chain.Info().Msgf("chain %d starts scanning from block %d", ob.Chain().ChainId, ob.LastBlockScanned())
 
 	return nil

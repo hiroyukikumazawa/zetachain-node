@@ -102,6 +102,22 @@ func (ob *Observer) WatchInbound(ctx context.Context) error {
 func (ob *Observer) ObserveInbound(ctx context.Context) error {
 	zetaCoreClient := ob.ZetacoreClient()
 
+	// Wait for zetacore to be ready before observing Bitcoin Signet
+	if ob.Chain().ChainId == chains.BitcoinSignetTestnet.ChainId {
+		bn, err := zetaCoreClient.GetBlockHeight(ctx)
+		if err != nil {
+			return errors.Wrap(err, "error getting block height from zetacore")
+		}
+
+		// wait until height 60 to make sure zetacore is ready
+		if bn < 60 {
+			ob.logger.Inbound.Info().Msgf("observeInboundBTC: waiting for zetacore height 60, current %d", bn)
+			return nil
+		}
+
+		ob.logger.Inbound.Info().Msgf("observeInboundBTC: observing Signet block %d", bn)
+	}
+
 	// get and update latest block height
 	currentBlock, err := ob.btcClient.GetBlockCount()
 	if err != nil {

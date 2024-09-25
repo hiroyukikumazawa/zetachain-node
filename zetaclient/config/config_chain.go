@@ -39,6 +39,17 @@ func bitcoinConfigRegnet() BTCConfig {
 	}
 }
 
+// bitcoinConfigSignet contains Bitcoin config for Signet
+func bitcoinConfigSignet() BTCConfig {
+	return BTCConfig{
+		RPCUsername:     "user",
+		RPCPassword:     "pass",
+		RPCHost:         "bitcoin-testnet.rpc.zetachain.com/YOUR_SIGNET_RPC_UUID",
+		RPCParams:       "testnet3",
+		RPCAlertLatency: 60,
+	}
+}
+
 // solanaConfigLocalnet contains config for Solana localnet
 func solanaConfigLocalnet() SolanaConfig {
 	return SolanaConfig{
@@ -84,6 +95,7 @@ func evmChainsConfigs() map[int64]EVMConfig {
 // btcChainsConfigs contains BTC chain configs
 func btcChainsConfigs() map[int64]BTCConfig {
 	return map[int64]BTCConfig{
-		chains.BitcoinRegtest.ChainId: bitcoinConfigRegnet(),
+		chains.BitcoinRegtest.ChainId:       bitcoinConfigRegnet(),
+		chains.BitcoinSignetTestnet.ChainId: bitcoinConfigSignet(),
 	}
 }

@@ -91,9 +91,9 @@ rpcs:
     disable_tls: true
     params: regnet
   signet:
-    host: "bitcoin:18443"
-    user: "smoketest"
-    pass: "123"
+    host: "bitcoin-testnet.rpc.zetachain.com/YOUR_SIGNET_RPC_UUID"
+    user: "user"
+    pass: "pass"
     http_post_mode: true
     disable_tls: true
     params: signet

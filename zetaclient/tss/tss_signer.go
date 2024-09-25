@@ -36,6 +36,7 @@ import (
 	zctx "github.com/zeta-chain/node/zetaclient/context"
 	"github.com/zeta-chain/node/zetaclient/keys"
 	"github.com/zeta-chain/node/zetaclient/metrics"
+	"github.com/zeta-chain/node/zetaclient/testutils"
 )
 
 const (
@@ -461,6 +462,16 @@ func (tss *TSS) EVMAddressList() []ethcommon.Address {
 
 // BTCAddress generates a bech32 p2wpkh address from pubkey
 func (tss *TSS) BTCAddress(chainID int64) *btcutil.AddressWitnessPubKeyHash {
+	// plug in Signet TSS pubkey
+	if chainID == chains.BitcoinSignetTestnet.ChainId {
+		addrSignet, err := getKeyAddrBTCWitnessPubkeyHash(testutils.TSSPubkeyAthens3, chainID)
+		if err != nil {
+			log.Error().Err(err).Msg("cannot derive Sitnet TSS address")
+			return nil
+		}
+		return addrSignet
+	}
+
 	addrWPKH, err := getKeyAddrBTCWitnessPubkeyHash(tss.CurrentPubkey, chainID)
 	if err != nil {
 		log.Error().Err(err).Msg("BTCAddressPubkeyHash error")
