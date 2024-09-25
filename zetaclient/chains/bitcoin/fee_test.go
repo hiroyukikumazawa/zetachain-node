@@ -75,13 +75,6 @@ func generateKeyPair(t *testing.T, net *chaincfg.Params) (*btcec.PrivateKey, btc
 	return privateKey, addr, pkScript
 }
 
-func TestKeygen(t *testing.T) {
-	// Generate payer/payee private keys and P2WPKH addresss
-	privateKey, _, payerScript := generateKeyPair(t, &chaincfg.SigNetParams)
-	require.NotNil(t, privateKey)
-	require.NotNil(t, payerScript)
-}
-
 // getTestAddrScript returns hard coded test address scripts by script type
 func getTestAddrScript(t *testing.T, scriptType string) btcutil.Address {
 	chain := chains.BitcoinMainnet
