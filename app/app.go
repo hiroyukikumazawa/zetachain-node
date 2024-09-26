@@ -1,11 +1,15 @@
 package app
 
 import (
+	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"time"
 
+	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
+	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
 	cosmoserrors "cosmossdk.io/errors"
 	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
@@ -19,6 +23,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
+	runtimeservices "github.com/cosmos/cosmos-sdk/runtime/services"
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -29,6 +34,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	authsimulation "github.com/cosmos/cosmos-sdk/x/auth/simulation"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/vesting"
@@ -88,7 +94,6 @@ import (
 	"github.com/zeta-chain/ethermint/x/feemarket"
 	feemarketkeeper "github.com/zeta-chain/ethermint/x/feemarket/keeper"
 	feemarkettypes "github.com/zeta-chain/ethermint/x/feemarket/types"
-
 	"github.com/zeta-chain/node/app/ante"
 	"github.com/zeta-chain/node/docs/openapi"
 	zetamempool "github.com/zeta-chain/node/pkg/mempool"
@@ -258,6 +263,7 @@ type App struct {
 	memKeys map[string]*storetypes.MemoryStoreKey
 
 	mm           *module.Manager
+	bmm          module.BasicManager
 	sm           *module.SimulationManager
 	configurator module.Configurator
 
@@ -736,6 +742,53 @@ func New(
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 	)
 
+	overrideModules := map[string]module.AppModuleSimulation{
+		// Use custom RandomGenesisAccounts so that auth module could create random EthAccounts in genesis state when genesis.json not specified
+		authtypes.ModuleName: auth.NewAppModule(app.appCodec,
+			app.AccountKeeper, authsimulation.RandomGenesisAccounts, app.GetSubspace(authtypes.ModuleName)),
+	}
+	modules := map[string]interface{}{}
+	for k, v := range app.mm.Modules {
+		if k != crosschaintypes.ModuleName &&
+			k != observertypes.ModuleName &&
+			k != fungibletypes.ModuleName &&
+			k != emissionstypes.ModuleName &&
+			k != authoritytypes.ModuleName &&
+			k != lightclienttypes.ModuleName {
+			modules[k] = v
+		}
+	}
+
+	app.sm = module.NewSimulationManagerFromAppModules(app.mm.Modules, overrideModules)
+
+	autocliv1.RegisterQueryServer(app.GRPCQueryRouter(), runtimeservices.NewAutoCLIQueryService(modules))
+
+	// BasicModuleManager defines the module BasicManager is in charge of setting up basic,
+	// non-dependant module elements, such as codec registration and genesis verification.
+	// By default it is composed of all the module from the module manager.
+	// Additionally, app module basics can be overwritten by passing them as argument.
+	moduleBasics := []module.AppModuleBasic{}
+	for _, m := range modules {
+		m, ok := m.(module.AppModuleBasic)
+		if !ok {
+			fmt.Printf("module %s is not an instance of module.AppModuleBasic\n", m)
+			continue
+		}
+		fmt.Println("module", m.Name())
+		moduleBasics = append(moduleBasics, m)
+	}
+	app.bmm = module.NewBasicManager(moduleBasics...)
+	app.bmm.RegisterLegacyAminoCodec(cdc)
+	app.bmm.RegisterInterfaces(interfaceRegistry)
+
+	reflectionSvc, err := runtimeservices.NewReflectionService()
+	if err != nil {
+		panic(err)
+	}
+	reflectionv1.RegisterReflectionServiceServer(app.GRPCQueryRouter(), reflectionSvc)
+
+	app.sm.RegisterStoreDecoders()
+
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the
 	// CanWithdrawInvariant invariant.
@@ -1051,6 +1104,11 @@ func VerifyAddressFormat(bz []byte) error {
 // SimulationManager implements the SimulationApp interface
 func (app *App) SimulationManager() *module.SimulationManager {
 	return app.sm
+}
+
+// DefaultGenesis returns a default genesis from the registered AppModuleBasic's.
+func (a *App) DefaultGenesis() map[string]json.RawMessage {
+	return a.bmm.DefaultGenesis(a.appCodec)
 }
 
 func (app *App) BlockedAddrs() map[string]bool {
