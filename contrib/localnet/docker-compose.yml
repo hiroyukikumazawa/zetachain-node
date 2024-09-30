@@ -126,6 +126,7 @@ services:
       - ETHDEV_ENDPOINT=http://eth:8545
       - HOTKEY_BACKEND=file
       - HOTKEY_PASSWORD=password # test purposes only
+      - ZETACLIENTD_GEN_PREPARAMS=${ZETACLIENTD_GEN_PREPARAMS-}
     restart: always
     volumes:
       - ssh:/root/.ssh
@@ -143,6 +144,7 @@ services:
       - ETHDEV_ENDPOINT=http://eth:8545
       - HOTKEY_BACKEND=file
       - HOTKEY_PASSWORD=password # test purposes only
+      - ZETACLIENTD_GEN_PREPARAMS=${ZETACLIENTD_GEN_PREPARAMS-}
     restart: always
     volumes:
       - ssh:/root/.ssh
@@ -162,6 +164,7 @@ services:
     environment:
       - HOTKEY_BACKEND=file
       - HOTKEY_PASSWORD=password # test purposes only
+      - ZETACLIENTD_GEN_PREPARAMS=${ZETACLIENTD_GEN_PREPARAMS-}
     volumes:
       - ssh:/root/.ssh
       - preparams:/root/preparams
@@ -180,6 +183,7 @@ services:
     environment:
       - HOTKEY_BACKEND=file
       - HOTKEY_PASSWORD=password # test purposes only
+      - ZETACLIENTD_GEN_PREPARAMS=${ZETACLIENTD_GEN_PREPARAMS-}
     volumes:
       - ssh:/root/.ssh
       - preparams:/root/preparams

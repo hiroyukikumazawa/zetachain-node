@@ -247,3 +247,25 @@ Exec into the `zetacored0` docker container and run the script to automatically 
 docker exec -it zetacore0 bash
 /root/test-gov-proposals.sh
 ```
+
+## Connecting Localnet to Live Networks
+
+You may want to setup a separate copy of localnet on another machine as it will conflict with your normal development flow. These instructions are designed for connecting to EVM networks but could be adapted to other networks.
+
+1. `zetae2e keygen ./cmd/zetae2e/config/localnet.yaml` (generate new localnet keys)
+2. `export NODE_COMPOSE_ARGS="-f docker-compose-persistent.yml"` (enable localnet persistence)
+3. `export ZETACLIENTD_GEN_PREPARAMS=true` (enable zetaclient preparams generation)
+4. set zetaclient config overlay in `contrib/localnet/scripts/zetaclient-config-overlay.json`. This file will be merged into the zetaclient config. You can use this to set RPC urls.
+5. `make start-localnet`
+6. Wait for initial keygen and deployment to complete
+7. `docker cp orchestrator:/work/deployed.yml deployed.yml` (extract e2e config which has zevm contract addresses set)
+8. Update `deployed.yml` with correct RPC urls. Example:
+    ```yaml
+    rpcs:
+      zevm: "http://localhost:9545"
+      evm: "https://my.rpc.provider.example"
+    ```
+9. Fund the default account on the external chain
+10. `zetae2e setup-evm ./deployed.yml` (deploy evm contracts. config will be updated.)
+11. `docker restart zetaclient0 zetaclient1` (restart zetaclients)
+12. `zetae2e run eth_deposit:2000000000000000000 --config ./deployed.yml` (run e2e test on live network)
