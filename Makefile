@@ -25,9 +25,15 @@ build_ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=zetacore \
 	-X github.com/zeta-chain/node/pkg/constant.BuildTime=$(BUILDTIME) \
 	-X github.com/cosmos/cosmos-sdk/types.DBBackend=pebbledb
 
+ld_version = $(shell ld -v 2>&1)
+
 # --allow-multiple-definitions need to be set when you are importing both cosmos-sdk
 # and go-ethereum: https://github.com/cosmos/cosmos-sdk/tree/release/v0.47.x/crypto/keys/secp256k1/internal/secp256k1
-all_ldflags = -extldflags=-Wl,--allow-multiple-definition
+ifeq ($(findstring LLVM,$(ld_version)),LLVM)
+	all_ldflags = -extldflags=-zmuldefs
+else
+	all_ldflags = -extldflags=-Wl,--allow-multiple-definition
+endif
 
 # enable libsecp256k1_sdk to bypass the btcec breaking change:
 # https://github.com/btcsuite/btcd/issues/2243
