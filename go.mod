@@ -65,6 +65,7 @@ require (
 	github.com/cometbft/cometbft-db v0.12.0
 	github.com/golang/mock v1.6.0
 	github.com/huandu/skiplist v1.2.0
+	github.com/libp2p/go-libp2p-core v0.20.1
 	github.com/nanmu42/etherscan-api v1.10.0
 	github.com/near/borsh-go v0.3.1
 	github.com/onrik/ethrpc v1.2.0
@@ -278,7 +279,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/mr-tron/base58 v1.2.0 // indirect
+	github.com/mr-tron/base58 v1.2.0
 	github.com/mtibben/percent v0.2.1 // indirect
 	github.com/multiformats/go-base32 v0.1.0 // indirect
 	github.com/multiformats/go-base36 v0.2.0 // indirect
@@ -366,4 +367,4 @@ replace github.com/evmos/ethermint => github.com/zeta-chain/ethermint v0.0.0-202
 
 replace github.com/libp2p/go-libp2p => github.com/zeta-chain/go-libp2p v0.0.0-20240710192637-567fbaacc2b4
 
-replace gitlab.com/thorchain/tss/go-tss => github.com/zeta-chain/go-tss v0.0.0-20240907163312-b576693642e0
+replace gitlab.com/thorchain/tss/go-tss => github.com/zeta-chain/go-tss v0.0.0-20241022015412-8817e5cdbfae

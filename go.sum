@@ -1100,6 +1100,8 @@ github.com/libp2p/go-flow-metrics v0.1.0 h1:0iPhMI8PskQwzh57jB9WxIuIOQ0r+15PChFG
 github.com/libp2p/go-flow-metrics v0.1.0/go.mod h1:4Xi8MX8wj5aWNDAZttg6UPmc0ZrnFNsMtpsYUClFtro=
 github.com/libp2p/go-libp2p-asn-util v0.3.0 h1:gMDcMyYiZKkocGXDQ5nsUQyquC9+H+iLEQHwOCZ7s8s=
 github.com/libp2p/go-libp2p-asn-util v0.3.0/go.mod h1:B1mcOrKUE35Xq/ASTmQ4tN3LNzVVaMNmq2NACuqyB9w=
+github.com/libp2p/go-libp2p-core v0.20.1 h1:fQz4BJyIFmSZAiTbKV8qoYhEH5Dtv/cVhZbG3Ib/+Cw=
+github.com/libp2p/go-libp2p-core v0.20.1/go.mod h1:6zR8H7CvQWgYLsbG4on6oLNSGcyKaYFSEYyDt51+bIY=
 github.com/libp2p/go-libp2p-kad-dht v0.24.2 h1:zd7myKBKCmtZBhI3I0zm8xBkb28v3gmSEtQfBdAdFwc=
 github.com/libp2p/go-libp2p-kad-dht v0.24.2/go.mod h1:BShPzRbK6+fN3hk8a0WGAYKpb8m4k+DtchkqouGTrSg=
 github.com/libp2p/go-libp2p-kbucket v0.6.3 h1:p507271wWzpy2f1XxPzCQG9NiN6R6lHL9GiSErbQQo0=
@@ -1669,8 +1671,8 @@ github.com/zeta-chain/ethermint v0.0.0-20240910000510-6248efa8bc4f h1:de8f21SSof
 github.com/zeta-chain/ethermint v0.0.0-20240910000510-6248efa8bc4f/go.mod h1:s1zA6OpXv3Tb5I0M6M6j5fo/AssaZL/pgkc7G0W2kN8=
 github.com/zeta-chain/go-libp2p v0.0.0-20240710192637-567fbaacc2b4 h1:FmO3HfVdZ7LzxBUfg6sVzV7ilKElQU2DZm8PxJ7KcYI=
 github.com/zeta-chain/go-libp2p v0.0.0-20240710192637-567fbaacc2b4/go.mod h1:TBv5NY/CqWYIfUstXO1fDWrt4bDoqgCw79yihqBspg8=
-github.com/zeta-chain/go-tss v0.0.0-20240907163312-b576693642e0 h1:OMuw0XgFcX0RQ8+B3gtreV4H/JPglCSfG2PfVi7bONM=
-github.com/zeta-chain/go-tss v0.0.0-20240907163312-b576693642e0/go.mod h1:LN1IBRN8xQkKgdgLhl5BDGZyPm70QOTbVLejdS2FVpo=
+github.com/zeta-chain/go-tss v0.0.0-20241022015412-8817e5cdbfae h1:D9OgvTCPC1UQ6NGTRNWwTHt9Judx8bfu+BCrdvG4d6o=
+github.com/zeta-chain/go-tss v0.0.0-20241022015412-8817e5cdbfae/go.mod h1:LN1IBRN8xQkKgdgLhl5BDGZyPm70QOTbVLejdS2FVpo=
 github.com/zeta-chain/keystone/keys v0.0.0-20231105174229-903bc9405da2 h1:gd2uE0X+ZbdFJ8DubxNqLbOVlCB12EgWdzSNRAR82tM=
 github.com/zeta-chain/keystone/keys v0.0.0-20231105174229-903bc9405da2/go.mod h1:x7Bkwbzt2W2lQfjOirnff0Dj+tykdbTG1FMJPVPZsvE=
 github.com/zeta-chain/protocol-contracts v1.0.2-athens3.0.20240819143729-b8229cd7b410 h1:sBeVX63s/qmfT1KnIKj1Y2SK3PsFpAM/P49ODcD1CN8=
