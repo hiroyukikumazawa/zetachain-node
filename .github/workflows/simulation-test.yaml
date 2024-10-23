@@ -64,8 +64,8 @@ jobs:
           make ${{ matrix.test-target }}
 
   manual-run:
-    runs-on: ubuntu-22.04
     if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
