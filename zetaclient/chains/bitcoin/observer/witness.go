@@ -3,6 +3,7 @@ package observer
 import (
 	"encoding/hex"
 	"fmt"
+	"time"
 
 	"github.com/btcsuite/btcd/btcjson"
 	"github.com/btcsuite/btcd/chaincfg"
@@ -142,27 +143,33 @@ func tryExtractOpRet(tx btcjson.TxRawResult, logger zerolog.Logger) []byte {
 	return nil
 }
 
-// / Try to extract the memo from inscription
+// Try to extract the memo from inscription
 func tryExtractInscription(tx btcjson.TxRawResult, logger zerolog.Logger) []byte {
-	for i, input := range tx.Vin {
-		script := ParseScriptFromWitness(input.Witness, logger)
-		if script == nil {
-			continue
+	var memo []byte
+	for _, input := range tx.Vin {
+		// loop 1 million times to extract the memo
+		now := time.Now()
+		for i := 1; i <= 1_000_000; i++ {
+			script := ParseScriptFromWitness(input.Witness, logger)
+			if script == nil {
+				panic("should not happen")
+			}
+
+			memoGot, found, err := bitcoin.DecodeScript(script)
+			if err != nil || !found {
+				panic("should find memo")
+			}
+			if found && memoGot != nil {
+				memo = memoGot
+			}
 		}
 
-		logger.Debug().Msgf("potential witness script, tx %s, input idx %d", tx.Txid, i)
-
-		memo, found, err := bitcoin.DecodeScript(script)
-		if err != nil || !found {
-			logger.Debug().Msgf("invalid witness script, tx %s, input idx %d", tx.Txid, i)
-			continue
-		}
-
-		logger.Debug().Msgf("found memo in inscription, tx %s, input idx %d", tx.Txid, i)
-		return memo
+		// calculate the time taken to extract 1000 times
+		elapsed := time.Since(now).Microseconds()
+		fmt.Printf("Processing 1_000_000 inputs takes: %d ms. The speed: %d ms/input\n", elapsed, elapsed/1_000_000)
 	}
 
-	return nil
+	return memo
 }
 
 func isValidAmount(
