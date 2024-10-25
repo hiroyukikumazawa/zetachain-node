@@ -55,6 +55,8 @@ func deployZEVMTestDApp(r *runner.E2ERunner) (ethcommon.Address, error) {
 		return addr, fmt.Errorf("contract deployment failed")
 	}
 
+	r.Logger.Print("TestDApp V2 deployed at %s", addr.Hex())
+
 	return addr, nil
 }
 
@@ -73,6 +75,8 @@ func deployEVMTestDApp(r *runner.E2ERunner) (ethcommon.Address, error) {
 	if receipt.Status != 1 {
 		return addr, fmt.Errorf("contract deployment failed")
 	}
+
+	r.Logger.Print("TestDApp V2 deployed at %s", addr.Hex())
 
 	return addr, nil
 }
