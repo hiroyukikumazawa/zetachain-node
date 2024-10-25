@@ -14,7 +14,7 @@ import (
 // which list the available tests
 func NewListTestsCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "list-tests",
+		Use:   "list-tests-foo",
 		Short: "List available tests",
 		RunE:  runListTests,
 		Args:  cobra.NoArgs,
