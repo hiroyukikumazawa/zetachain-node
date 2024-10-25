@@ -5,10 +5,9 @@ import (
 
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
-
-	"github.com/zeta-chain/zetacore/e2e/contracts/testdapp"
 	"github.com/zeta-chain/zetacore/e2e/runner"
 	"github.com/zeta-chain/zetacore/e2e/utils"
+	"github.com/zeta-chain/zetacore/pkg/contracts/testdappv2"
 )
 
 // deployFunc is a function that deploys a contract
@@ -42,11 +41,9 @@ func TestDeployContract(r *runner.E2ERunner, args []string) {
 
 // deployZEVMTestDApp deploys the TestDApp contract on ZetaChain
 func deployZEVMTestDApp(r *runner.E2ERunner) (ethcommon.Address, error) {
-	addr, tx, _, err := testdapp.DeployTestDApp(
+	addr, tx, _, err := testdappv2.DeployTestDAppV2(
 		r.ZEVMAuth,
 		r.ZEVMClient,
-		r.ConnectorZEVMAddr,
-		r.WZetaAddr,
 	)
 	if err != nil {
 		return addr, err
@@ -63,11 +60,9 @@ func deployZEVMTestDApp(r *runner.E2ERunner) (ethcommon.Address, error) {
 
 // deployEVMTestDApp deploys the TestDApp contract on Ethereum
 func deployEVMTestDApp(r *runner.E2ERunner) (ethcommon.Address, error) {
-	addr, tx, _, err := testdapp.DeployTestDApp(
+	addr, tx, _, err := testdappv2.DeployTestDAppV2(
 		r.EVMAuth,
 		r.EVMClient,
-		r.ConnectorEthAddr,
-		r.ZetaEthAddr,
 	)
 	if err != nil {
 		return addr, err
